@@ -3,7 +3,8 @@ import React from 'react'
 import useEditor from '../hooks/useEditor'
 import { cn } from '../lib/utils'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
-import { Circle, IText, Rect } from 'fabric'
+import { Circle, IText, Line, Rect } from 'fabric'
+import mergeImages from 'merge-images'
 
 const LeftSidebar = () => {
 
@@ -40,9 +41,23 @@ const LeftSidebar = () => {
         canvas.setActiveObject(text);
     }
 
+    function addLine() {
+        const line = new Line([100, 100, 200, 200], {
+            stroke: 'red',
+            strokeWidth: 4,
+        });
+        canvas.add(line);
+        canvas.renderAll();
+    }
+
+
+
+
+
 
     return (
         <div className=' min-w-72 max-w-72 flex-grow flex flex-col  border-r-2 border-zinc-200'>
+            <canvas className='hidden' id="canvason" width="600" height="600"></canvas>
             <div className='flex flex-col gap-6 p-4'>
                 <div
                     className={cn(
@@ -128,7 +143,10 @@ const LeftSidebar = () => {
                                 Text
                             </span>
                             <span
-                                onClick={() => setActiveCanvasElement('line')}
+                                onClick={() => {
+                                    setActiveCanvasElement('line')
+                                    addLine()
+                                }}
                                 className='py-4 pt-10 aspect-square rounded-md hover:bg-zinc-100 flex flex-col justify-between items-center ease-in-out duration-300 cursor-pointer'
                             >
                                 <div className='w-20 h-1 bg-blue-500' />
@@ -158,7 +176,7 @@ const LeftSidebar = () => {
                     </PopoverPanel>
                 </Popover>
             </div>
-        </div>
+        </div >
     )
 }
 

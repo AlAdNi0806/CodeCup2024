@@ -12,5 +12,8 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['tailwindcss', 'autoprefixer']
+  },
+  mergeImages: {
+    crossOrigin: "Anonymous"
   }
 })

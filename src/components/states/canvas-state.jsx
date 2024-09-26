@@ -8,6 +8,7 @@ import EditorCanvas from './_components/EditorCanvas';
 import { ActiveSelection, Canvas, filters, PencilBrush } from 'fabric';
 import Color from '../settings/Color';
 import Text from '../settings/Text';
+import StrokeWidth from '../settings/StrokeWidth';
 
 const type = "CanvasState";
 
@@ -26,7 +27,7 @@ export const CanvasStateElement = {
 
 function PropertiesComponent(props) {
 
-    const { canvas, setCanvas, currentFilter, setCurrentFilter, currentColor, setCurrentColor, fontSize, setFontSize, fontWeight, setFontWeight, fontFamily, setFontFamily } = useEditor()
+    const { canvas, setCanvas, currentFilter, setCurrentFilter, currentColor, setCurrentColor, strokeWidth, setStrokeWidth, fontSize, setFontSize, fontWeight, setFontWeight, fontFamily, setFontFamily } = useEditor()
 
     return (
         <div>
@@ -43,6 +44,11 @@ function PropertiesComponent(props) {
                 setFontFamily={setFontFamily}
                 fontFamily={fontFamily}
                 placeholder={'text'}
+            />
+            <StrokeWidth
+                placeholder={'strokeWidth'}
+                setStrokeWidth={setStrokeWidth}
+                strokeWidth={strokeWidth}
             />
         </div>
     );
@@ -61,7 +67,7 @@ function DesignerComponent({ editorId }) {
     // const [currentFilter, setCurrentFilter] = useState(null);
     // const [currentColor, setCurrentColor] = useState('fff');
 
-    const { imageRef, imageSrc, currentState, canvas, setCanvas, currentFilter, setCurrentFilter, currentColor, setCurrentColor, fontSize, setFontSize, fontWeight, setFontWeight, fontFamily, setFontFamily, adjustState } = useEditor()
+    const { imageRef, imageSrc, currentState, canvas, setCanvas, currentFilter, setCurrentFilter, currentColor, setCurrentColor, fontSize, setFontSize, fontWeight, setFontWeight, fontFamily, setFontFamily, strokeWidth, setStrokeWidth, adjustState } = useEditor()
 
 
 
@@ -82,14 +88,8 @@ function DesignerComponent({ editorId }) {
         brush.width = 5;
         canvas.freeDrawingBrush = brush;
 
-        // const loadedObjects = JSON.parse(currentState['CANVAS'].objects);
-
-        // canvas.clear();
-
-        // // Load the objects
-        // canvas.loadFromJSON(loadedObjects, () => {
-        //     canvas.renderAll();
-        // });
+        // canvas.selectionBorderColor = '#ff0000';
+        // canvas.selectionBorderWidth = 2;
 
         return () => canvas.dispose();
 
@@ -138,6 +138,7 @@ function DesignerComponent({ editorId }) {
         const isRectangle = activeObject && activeObject.isType('rect');
         const isCircle = activeObject && activeObject.isType('circle');
         const isIText = activeObject && activeObject.isType('i-text');
+        const isLine = activeObject && activeObject.isType('line');
 
         if (isRectangle) {
             activeObject.set('fill', currentColor);
@@ -147,6 +148,9 @@ function DesignerComponent({ editorId }) {
             canvas.renderAll();
         } else if (isIText) {
             activeObject.set('fill', currentColor);
+            canvas.renderAll();
+        } else if (isLine) {
+            activeObject.set('stroke', currentColor);
             canvas.renderAll();
         }
 
@@ -199,18 +203,45 @@ function DesignerComponent({ editorId }) {
     }, [fontFamily, canvas]);
 
     useEffect(() => {
+        if (!canvas ||
+            !canvas.getActiveObject()) return;
+
+        if (strokeWidth === null || strokeWidth === 0 || strokeWidth === '' || strokeWidth === undefined) return;
+
+        console.log('strokeWidth', strokeWidth)
+
+        const activeObject = canvas.getActiveObject();
+
+        const isLine = activeObject && activeObject.isType('line');
+
+        if (isLine) {
+            activeObject.set('strokeWidth', parseInt(strokeWidth));
+            canvas.renderAll();
+        }
+
+    }, [strokeWidth, canvas]);
+
+
+
+    useEffect(() => {
         if (!canvas) return;
 
         function handleSelection(e) {
             const obj = e.selected?.length === 1 ? e.selected[0] : null;
             const filter = obj?.filters?.at(0);
             const fill = obj?.fill;
+            const stroke = obj?.stroke;
             console.log('fill', fill);
-            setCurrentColor(fill);
             setCurrentFilter(filter ? filter.type.toLowerCase() : null);
             setFontSize(obj?.fontSize);
             setFontWeight(obj?.fontWeight);
             setFontFamily(obj?.fontFamily);
+            setStrokeWidth(obj?.strokeWidth);
+            if (obj?.isType('line')) {
+                setCurrentColor(stroke);
+            } else {
+                setCurrentColor(fill);
+            }
         }
 
         canvas.on({
@@ -339,12 +370,14 @@ function DesignerComponent({ editorId }) {
     const [saturation, setSaturation] = useState(adjustState.saturation)
     const [inversion, setInversion] = useState(adjustState.inversion)
     const [grayscale, setGrayscale] = useState(adjustState.grayscale)
+    const [blueAmmount, setBlueAmmount] = useState(adjustState.blueAmmount)
 
     useEffect(() => {
         setBrightness(adjustState.brightness)
         setSaturation(adjustState.saturation)
         setInversion(adjustState.inversion)
         setGrayscale(adjustState.grayscale)
+        setBlueAmmount(adjustState.blueAmmount)
     }, [adjustState])
 
     useEffect(() => {
@@ -352,6 +385,7 @@ function DesignerComponent({ editorId }) {
         setSaturation(currentState['ADJUST'].saturation)
         setInversion(currentState['ADJUST'].inversion)
         setGrayscale(currentState['ADJUST'].grayscale)
+        setBlueAmmount(currentState['ADJUST'].blueAmmount)
     }, [currentState]);
 
 
@@ -374,7 +408,7 @@ function DesignerComponent({ editorId }) {
                         // className='absolute top-0 left-0'
                         style={{
                             maxHeight: "70vh",
-                            filter: `brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%) ${currentState['FILTER'].state === 'NONE' ? '' : currentState['FILTER'].state === 'SEPIA' ? 'sepia(100%)' : currentState['FILTER'].state === 'GRAY' ? 'grayscale(100%)' : currentState['FILTER'].state === 'VINTAGE' ? 'vintage(100%)' : ''}`,
+                            filter: `hue-rotate(${blueAmmount}deg) brightness(${brightness}%) saturate(${saturation}%) invert(${inversion}%) grayscale(${grayscale}%) ${currentState['FILTER'].state === 'NONE' ? '' : currentState['FILTER'].state === 'SEPIA' ? 'sepia(100%)' : currentState['FILTER'].state === 'GRAY' ? 'grayscale(100%)' : currentState['FILTER'].state === 'VINTAGE' ? 'vintage(100%)' : ''}`,
                             transform: `rotate(${currentState['ROTATE_FLIP'].rotate}deg) scale(${currentState['ROTATE_FLIP'].flipHorizontal}, ${currentState['ROTATE_FLIP'].flipVertical})`
                         }}
                     />

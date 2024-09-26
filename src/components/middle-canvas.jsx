@@ -136,6 +136,14 @@ const MiddleCanvas = () => {
     const { imageRef, currentState, canvas: returnCanvas } = useEditor();
 
     const saveImage = async () => {
+        if (imageRef.current === null) {
+            const link = document.createElement('a');
+            link.download = 'image.png';
+            link.href = imageSrc;
+            link.click();
+            return;
+        };
+
         const canvas = document.querySelector("canvas")
         const ctx = canvas.getContext("2d");
 
@@ -151,18 +159,21 @@ const MiddleCanvas = () => {
         ctx.drawImage(imageRef.current, -canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height);
 
 
-        const firstUrl = canvas.toDataURL({ format: 'png', quality: 1 });
+        // const firstUrl = canvas.toDataURL({ format: 'png', quality: 1 });
 
-        const secondUrl = returnCanvas.toDataURL();
+
+        // const secondUrl = returnCanvas.toDataURL();
 
 
         //TODO: somehow export the two images in one 'hhhhhhhhhhhhhhhhhhh'
 
 
-        const link = document.createElement('a');
-        link.download = 'image.png';
-        link.href = returnCanvas.toDataURL();
-        link.click();
+        if (returnCanvas !== null) {
+            const link = document.createElement('a');
+            link.download = 'image.png';
+            link.href = returnCanvas.toDataURL();
+            link.click();
+        }
 
         const exportAsPNG = () => {
             if (!canvas) return;
@@ -175,9 +186,13 @@ const MiddleCanvas = () => {
             link.download = 'canvas_image.png';
             link.href = dataUrl;
             link.click();
+
+
         };
 
-        exportAsPNG();
+        if (canvas !== null) {
+            exportAsPNG();
+        }
 
     }
 
@@ -223,7 +238,10 @@ const MiddleCanvas = () => {
                     </span>
                 </div>
                 <div className='flex flex-row items-center gap-4'>
-                    <div className='ring-1 p-4 py-2 font-semibold ring-gray-200 flex flex-row items-center justify-between rounded-full'>
+                    <div
+                        className='cursor-pointer ring-1 p-4 py-2 font-semibold ring-gray-200 flex flex-row items-center justify-between rounded-full'
+                        onClick={() => {window.location.reload()}}
+                    >
                         Cancel
                     </div>
                     <div

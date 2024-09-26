@@ -82,7 +82,16 @@ export const fontFamilyOptions = [
   { value: "Times New Roman", label: "Times New Roman" },
   { value: "Comic Sans MS", label: "Comic Sans MS" },
   { value: "Brush Script MT", label: "Brush Script MT" },
+  { value: "Georgia", label: "Georgia" },
+
 ];
+
+export const proportions = [
+  { value: 1/1, label: "1:1" },
+  { value: 4/3, label: "4:3" },
+  { value: 16/9, label: "16:9" },
+  // { value: null, label: "Free" },
+]
 
 export const fontSizeOptions = [
   {

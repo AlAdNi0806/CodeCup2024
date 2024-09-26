@@ -1,10 +1,11 @@
 
-import { z } from 'zod'
+import { set, z } from 'zod'
 
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop } from 'react-image-crop'
 import useEditor from '../../hooks/useEditor';
 import setCanvasPreview from '../../utils/setCanvasPreview';
+import { proportions } from '../../constants';
 
 
 
@@ -29,9 +30,24 @@ function PropertiesComponent({
 
 }) {
 
+    const { editorState, setEditorState, imageSrc, setImageSrc, originalImageSrc, setOriginalImageSrc, cropProportions, setCropProportions } = useEditor();
+
     return (
         <div>
-            cropProperties
+            <select
+                onChange={(e) => setCropProportions(e.target.value)}
+                value={cropProportions}
+            >
+                {proportions.map((option) => (
+                    <option
+                        key={option.value}
+                        value={option.value}
+                        className='hover:bg-primary-green hover:text-primary-black'
+                    >
+                        {option.label}
+                    </option>
+                ))}
+            </select>
         </div>
     )
 }
@@ -51,7 +67,10 @@ function DesignerComponent({ }) {
     const [error, setError] = useState("");
     const [aspect, setAspect] = useState(null);
 
-    const { editorState, setEditorState, imageSrc, setImageSrc, originalImageSrc, setOriginalImageSrc } = useEditor();
+    const [width, setWidth] = useState(null)
+    const [height, setHeight] = useState(null)
+
+    const { editorState, setEditorState, imageSrc, setImageSrc, originalImageSrc, setOriginalImageSrc, cropProportions, setCropProportions } = useEditor();
 
     const onSelectFile = (e) => {
         const file = e.target.files?.[0];
@@ -78,8 +97,27 @@ function DesignerComponent({ }) {
         reader.readAsDataURL(file);
     };
 
+    useEffect(() => {
+        if (width === null || height === null) return;
+
+        const crop = makeAspectCrop(
+            {
+                unit: "%",
+                width: 100,
+                height: 100,
+            },
+            cropProportions === null ? width / height : cropProportions,
+            width,
+            height
+        );
+        const centeredCrop = centerCrop(crop, width, height);
+        setCrop(centeredCrop);
+    }, [cropProportions])
+
     const onImageLoad = (e) => {
         const { width, height } = e.currentTarget;
+        setWidth(width)
+        setHeight(height)
         const cropWidthInPercent = (MIN_DIMENSION / width) * 100;
 
         const crop = makeAspectCrop(
@@ -88,7 +126,8 @@ function DesignerComponent({ }) {
                 width: 100,
                 height: 100,
             },
-            width / height,
+            // cropProportions === null ? width / height : cropProportions,
+            1 / 1,
             width,
             height
         );
@@ -101,10 +140,10 @@ function DesignerComponent({ }) {
         < >
             {!originalImageSrc && (
                 <label className="block mb-3 w-fit">
-                    <span className="sr-only">Choose profile photo</span>
+                    <span className="sr-only">Choose photo</span>
                     <input
                         type="file"
-                        accept="image/*"
+                        accept="image/jpeg,image/png"
                         onChange={onSelectFile}
                         className="block w-full text-sm text-slate-500 file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:bg-gray-700 file:text-sky-300 hover:file:bg-gray-600"
                     />
@@ -131,7 +170,7 @@ function DesignerComponent({ }) {
                     }}
                     // circularCrop
                     keepSelection
-                    // aspect={ASPECT_RATIO}
+                    aspect={cropProportions === null ? width / height : cropProportions}
                     minWidth={MIN_DIMENSION}
                     minHeight={MIN_DIMENSION}
                 >

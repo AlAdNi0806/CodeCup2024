@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop } from 'react-image-crop'
 import useEditor from '../../hooks/useEditor';
 import setCanvasPreview from '../../utils/setCanvasPreview';
-import { FlipHorizontal2, FlipVertical2, RotateCcwSquare, RotateCwSquare } from 'lucide-react';
+import { FlipHorizontal2, FlipVertical2, RotateCcw, RotateCcwSquare, RotateCw, RotateCwSquare } from 'lucide-react';
 
 
 
@@ -31,6 +31,28 @@ function PropertiesComponent({
 }) {
 
     const { currentState, setCurrentState, addNewState } = useEditor()
+
+    const [value, setValue] = useState('');
+
+    const onBlur = () => {
+        addNewState({
+            ...currentState,
+            'ROTATE_FLIP': {
+                ...currentState['ROTATE_FLIP'],
+                rotate: value
+            }
+        })
+    }
+
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            onBlur()
+            console.log('Enter key pressed with value:', value);
+            // Add your desired action here
+        }
+    };
+
+
 
     return (
         <div className='flex flex-col gap-4 p-6'>
@@ -70,6 +92,49 @@ function PropertiesComponent({
                     <RotateCwSquare />
                 </div>
             </div>
+            <div className='flex flex-row gap-4'>
+                <span
+                    className='flex justify-center items-center flex-grow h-16 rounded-md overflow-hidden relative ring-2 ring-zinc-200 cursor-pointer'
+                    onClick={() => {
+                        console.log('clicked')
+
+                        addNewState({
+                            ...currentState,
+                            'ROTATE_FLIP': {
+                                ...currentState['ROTATE_FLIP'],
+                                rotate: currentState['ROTATE_FLIP'].rotate - 45
+                            }
+                        })
+                    }}
+                >
+                    <RotateCcw size={28} />
+                </span>
+                <div
+                    className='flex justify-center items-center flex-grow h-16 rounded-md overflow-hidden relative ring-2 ring-zinc-200 cursor-pointer'
+                    onClick={() => {
+                        console.log('clicked')
+                        addNewState({
+                            ...currentState,
+                            'ROTATE_FLIP': {
+                                ...currentState['ROTATE_FLIP'],
+                                rotate: currentState['ROTATE_FLIP'].rotate + 45
+                            }
+                        })
+                    }}
+                >
+                    <RotateCw />
+                </div>
+            </div>
+
+            <input
+                type="number"
+                onBlur={() => onBlur()}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                className='w-full p-2 rounded-md border border-zinc-200 text-zinc-700 font-semibold'
+                onKeyDown={handleKeyPress}
+            />
+
             <p className='text-lg text-zinc-700 font-semibold'>
                 Flip
             </p>

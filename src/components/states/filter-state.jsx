@@ -66,6 +66,7 @@ function PropertiesComponent({
                         filter: `brightness(${currentState['ADJUST'].brightness}%) saturate(${currentState['ADJUST'].saturation}%) invert(${currentState['ADJUST'].inversion}%) grayscale(${currentState['ADJUST'].grayscale}%)`
                     }}
                 />
+                DEFAULT
             </div>
             <div
                 className={cn(
@@ -82,38 +83,45 @@ function PropertiesComponent({
                         filter: `brightness(${currentState['ADJUST'].brightness}%) saturate(${currentState['ADJUST'].saturation}%) invert(${currentState['ADJUST'].inversion}%) grayscale(${currentState['ADJUST'].grayscale}%) sepia(100%)`
                     }}
                 />
+                SEPIA
             </div>
-            <div
-                className={cn(
-                    ' min-w-10 min-h-10 aspect-square rounded-md overflow-hidden relative cursor-pointer',
-                    currentState['FILTER'].state === 'GRAY' && 'ring-2 ring-black'
-                )}
-                onClick={() => onChange('GRAY')}
-            >
-                <img
-                    src={imageSrc}
-                    alt="Upload"
-                    className='w-full h-full object-cover'
-                    style={{
-                        filter: `brightness(${currentState['ADJUST'].brightness}%) saturate(${currentState['ADJUST'].saturation}%) invert(${currentState['ADJUST'].inversion}%) grayscale(${currentState['ADJUST'].grayscale}%) grayscale(100%)`
-                    }}
-                />
+            <div>
+                <div
+                    className={cn(
+                        ' min-w-10 min-h-10 aspect-square rounded-md overflow-hidden relative cursor-pointer',
+                        currentState['FILTER'].state === 'GRAY' && 'ring-2 ring-black'
+                    )}
+                    onClick={() => onChange('GRAY')}
+                >
+                    <img
+                        src={imageSrc}
+                        alt="Upload"
+                        className='w-full h-full object-cover'
+                        style={{
+                            filter: `brightness(${currentState['ADJUST'].brightness}%) saturate(${currentState['ADJUST'].saturation}%) invert(${currentState['ADJUST'].inversion}%) grayscale(${currentState['ADJUST'].grayscale}%) grayscale(100%)`
+                        }}
+                    />
+                </div>
+                GRAY
             </div>
-            <div
-                className={cn(
-                    ' min-w-10 min-h-10 aspect-square rounded-md overflow-hidden relative cursor-pointer',
-                    currentState['FILTER'].state === 'VINTAGE' && 'ring-2 ring-black'
-                )}
-                onClick={() => onChange('VINTAGE')}
-            >
-                <img
-                    src={imageSrc}
-                    alt="Upload"
-                    className='w-full h-full object-cover'
-                    style={{
-                        filter: `brightness(${currentState['ADJUST'].brightness}%) saturate(${currentState['ADJUST'].saturation}%) invert(${currentState['ADJUST'].inversion}%) grayscale(${currentState['ADJUST'].grayscale}%) vintage(100%)`
-                    }}
-                />
+            <div>
+                <div
+                    className={cn(
+                        ' min-w-10 min-h-10 aspect-square rounded-md overflow-hidden relative cursor-pointer',
+                        currentState['FILTER'].state === 'VINTAGE' && 'ring-2 ring-black'
+                    )}
+                    onClick={() => onChange('VINTAGE')}
+                >
+                    <img
+                        src={imageSrc}
+                        alt="Upload"
+                        className='w-full h-full object-cover'
+                        style={{
+                            filter: `brightness(${currentState['ADJUST'].brightness}%) saturate(${currentState['ADJUST'].saturation}%) invert(${currentState['ADJUST'].inversion}%) grayscale(${currentState['ADJUST'].grayscale}%) vintage(100%)`
+                        }}
+                    />
+                </div>
+                VINTAGE
             </div>
         </div>
     )

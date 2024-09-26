@@ -5,6 +5,8 @@ export const EditorContext = createContext(null)
 
 export default function EditorContextProvider({ children }) {
 
+    const [cropProportions, setCropProportions] = useState('1/1')
+
     const [previousStates, setPreviousStates] = useState([])
     const [currentState, setCurrentState] = useState({
         'CROP': {
@@ -66,6 +68,7 @@ export default function EditorContextProvider({ children }) {
         saturation: 100,
         inversion: 0,
         grayscale: 0,
+        blueAmmount: 180
     })
 
 
@@ -121,6 +124,7 @@ export default function EditorContextProvider({ children }) {
     const [fontSize, setFontSize] = useState(14);
     const [fontWeight, setFontWeight] = useState(400);
     const [fontFamily, setFontFamily] = useState('Helvetica');
+    const [strokeWidth, setStrokeWidth] = useState(2);
 
     const imageRef = useRef(null)
 
@@ -141,6 +145,11 @@ export default function EditorContextProvider({ children }) {
             setFontWeight,
             fontFamily,
             setFontFamily,
+            strokeWidth,
+            setStrokeWidth,
+
+            cropProportions,
+            setCropProportions,
 
 
             addNewState,

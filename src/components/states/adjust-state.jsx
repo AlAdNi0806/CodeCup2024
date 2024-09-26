@@ -6,6 +6,7 @@ import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop } from 'react
 import useEditor from '../../hooks/useEditor';
 import setCanvasPreview from '../../utils/setCanvasPreview';
 import SliderComponent from '../Slider';
+import kelvinToRGB from 'kelvin-to-rgb';
 
 
 
@@ -37,15 +38,18 @@ function PropertiesComponent({
     const [inversion, setInversion] = useState(currentState['ADJUST'].inversion)
     const [grayscale, setGrayscale] = useState(currentState['ADJUST'].grayscale)
 
+    const [blueAmmount, setBlueAmmount] = useState(currentState['ADJUST'].blueAmmount)
+
     useEffect(() => {
         onChange()
-    }, [brightness, saturation, inversion, grayscale])
+    }, [brightness, saturation, inversion, grayscale, blueAmmount])
 
     useEffect(() => {
         setBrightness(currentState['ADJUST'].brightness)
         setSaturation(currentState['ADJUST'].saturation)
         setInversion(currentState['ADJUST'].inversion)
         setGrayscale(currentState['ADJUST'].grayscale)
+        setBlueAmmount(currentState['ADJUST'].blueAmmount)
     }, [currentState]);
 
     const onMouseUp = () => {
@@ -58,20 +62,31 @@ function PropertiesComponent({
                 saturation: saturation,
                 inversion: inversion,
                 grayscale: grayscale,
+                blueAmmount: blueAmmount,
             }
         })
     }
 
     const onChange = () => {
         console.log('asdf')
+        console.log('blueAmmount', blueAmmount)
         setAdjustState({
             // ...currentState['ADJUST'],
             brightness: brightness,
             saturation: saturation,
             inversion: inversion,
             grayscale: grayscale,
+            blueAmmount: blueAmmount,
         })
     }
+
+    const [kelvin, setKelvin] = useState(15000)
+
+    useEffect(() => {
+        console.log('kelvin', kelvin)
+        const rgb = kelvinToRGB(kelvin)
+        console.log('rgb', rgb)
+    }, [kelvin])
 
     return (
         <div className='flex flex-col'>
@@ -79,6 +94,24 @@ function PropertiesComponent({
             <SliderComponent label='Saturation' value={saturation} setValue={setSaturation} onMouseUp={onMouseUp} min={0} max={400} />
             <SliderComponent label='Inversion' value={inversion} setValue={setInversion} onMouseUp={onMouseUp} min={0} max={100} />
             <SliderComponent label='Grayscale' value={grayscale} setValue={setGrayscale} onMouseUp={onMouseUp} min={0} max={100} />
+            <SliderComponent label='Temperature' value={blueAmmount} setValue={setBlueAmmount} onMouseUp={onMouseUp} min={0} max={180} />
+
+
+            {/* <SliderComponent label='Grayscale' value={grayscale} setValue={setGrayscale} onMouseUp={onMouseUp} min={0} max={100} /> */}
+
+            <input
+                type="number"
+                // onBlur={() => onBlur()}
+                // value={value}
+                // onChange={(e) => setValue(e.target.value)}
+                value={blueAmmount}
+                onChange={(e) => {
+                    setBlueAmmount(e.target.value)
+                }}
+                onBlur={() => onChange()}
+                className='w-full p-2 rounded-md border border-zinc-200 text-zinc-700 font-semibold'
+            // onKeyDown={handleKeyPress}
+            />
         </div>
     )
 }
